@@ -21,6 +21,9 @@ function rgb(hex: string): [number, number, number] {
 }
 
 function setPixel(x: number, y: number, c: [number, number, number]): void {
+  // Fractional scales (subtext at 2.5x) land on half pixels; floor them.
+  x = Math.floor(x);
+  y = Math.floor(y);
   if (x < 0 || y < 0 || x >= W || y >= H) return;
   const i = (y * W + x) * 3;
   buf[i] = c[0];
@@ -201,16 +204,16 @@ type Story = {
 };
 
 const STORIES: Story[] = [
-  { tag: "CLIMATE", color: "#1B7A3D", icon: "globe", headline: "COP31 COLLAPSES", sub: "Antalya talks end with no deal. 90+ nations reject draft." },
-  { tag: "TECH", color: "#0E7C7B", icon: "chip", headline: "HUANG IS BACK", sub: "Nvidia reinstates CEO. Shares +31% in a day." },
-  { tag: "WAR", color: "#C1272D", icon: "building", headline: "ZAPORIZHZHIA HIT", sub: "Russian strike kills 2, wounds 40, incl. 4 children." },
-  { tag: "WAR", color: "#8E1F2F", icon: "target", headline: "GAZA STRIKES", sub: "Hamas security chief Naeem Abu Nahel killed." },
+  { tag: "CLIMATE", color: "#1B7A3D", icon: "globe", headline: "DRAFT REJECTED", sub: "No fossil-fuel wording in draft." },
+  { tag: "TECH", color: "#0E7C7B", icon: "chip", headline: "HUANG IS BACK", sub: "Nvidia reinstates CEO, shares +31%." },
+  { tag: "WAR", color: "#C1272D", icon: "building", headline: "ZAPORIZHZHIA HIT", sub: "Russian strike: 2 killed, 40 hurt." },
+  { tag: "WAR", color: "#8E1F2F", icon: "target", headline: "GAZA STRIKES", sub: "Hamas chief Naeem Abu Nahel killed." },
   { tag: "WAR", color: "#1F4E79", icon: "ship", headline: "HORMUZ TENSION", sub: "Iran vows to fight US naval blockade." },
-  { tag: "WAR", color: "#3A6EA5", icon: "ship", headline: "LIBYA SEA STRIKE", sub: "Ukraine drones sink Russian ship at Benghazi." },
-  { tag: "SECURITY", color: "#5B4A8A", icon: "radar", headline: "NATO ON ALERT", sub: "Russian jets probe allies. AWACS sent to Poland." },
+  { tag: "WAR", color: "#3A6EA5", icon: "ship", headline: "LIBYA SEA STRIKE", sub: "Ukraine drones sink Russian ship." },
+  { tag: "SPACE", color: "#283593", icon: "rocket", headline: "ARIANE 6 LIFTS OFF", sub: "Ariane 6 launches 36 Leo satellites." },
   { tag: "BUSINESS", color: "#B77900", icon: "pill", headline: "SANOFI $41BN DEAL", sub: "Sanofi to buy US drugmaker Insmed." },
-  { tag: "ECONOMY", color: "#2E7D32", icon: "chart", headline: "US CONFIDENCE JUMPS", sub: "Consumer confidence index at 103.3 in Nov." },
-  { tag: "LAW", color: "#455A64", icon: "scale", headline: "HUAWEI CONVICTED", sub: "US trial over Iran business ends in conviction." },
+  { tag: "ECONOMY", color: "#2E7D32", icon: "chart", headline: "US CONFIDENCE JUMPS", sub: "Consumer confidence at 103.3." },
+  { tag: "LAW", color: "#455A64", icon: "scale", headline: "HUAWEI CONVICTED", sub: "Convicted in US trial over Iran." },
   { tag: "TRADE", color: "#C05621", icon: "arrows", headline: "TARIFFS LOOM", sub: "US to hit China, EU and 14 others." },
   { tag: "ASIA", color: "#7A4A21", icon: "bus", headline: "UAE BUS CRASH", sub: "13 killed, 14 hurt in Ras Al Khaimah." },
 ];
@@ -282,6 +285,13 @@ function drawIcon(kind: string, x: number, y: number): void {
     fillRect(x + 17, y + 13, 6, 5, "#7A4A21");
     fillCircle(x + 11, y + 27, 4, w);
     fillCircle(x + 25, y + 27, 4, w);
+  } else if (kind === "rocket") {
+    fillTriangle(x + 14, y + 10, x + 22, y + 10, x + 18, y + 2, w);
+    fillRect(x + 14, y + 10, 8, 14, w);
+    fillTriangle(x + 14, y + 20, x + 8, y + 28, x + 14, y + 24, w);
+    fillTriangle(x + 22, y + 20, x + 28, y + 28, x + 22, y + 24, w);
+    fillCircle(x + 18, y + 15, 3, "#283593");
+    fillTriangle(x + 15, y + 24, x + 21, y + 24, x + 18, y + 32, w);
   }
 }
 
@@ -329,15 +339,17 @@ for (let i = 0; i < STORIES.length; i++) {
     drawText(cx + 12, cy + 62 + li * 24, headLines[li], 3, INK);
   }
   drawLine(cx + 12, cy + 116, cx + 80, cy + 116, RED, 3);
-  const subLines = wrap(s.sub, 24);
-  for (let li = 0; li < subLines.length && li < 3; li++) {
-    drawText(cx + 12, cy + 128 + li * 17, subLines[li], 2, MUTED);
+  // Subtext at 2.5x (up ~25% from 2x) so it still reads at ~300px wide,
+  // capped at 2 lines so the footer stays clear of the bottom row.
+  const subLines = wrap(s.sub, 19);
+  for (let li = 0; li < subLines.length && li < 2; li++) {
+    drawText(cx + 12, cy + 126 + li * 21, subLines[li], 2.5, MUTED);
   }
 }
 
 // Footer: sources, so the judge can see the poster is reported news,
 // with the date repeated once more for the date-first criterion.
-drawText(20, 1000, "SOURCES: REUTERS - DOW JONES - JUST SECURITY - GRIST - 24 NOV 2026", 2, MUTED);
+drawText(20, 1000, "SOURCES: REUTERS - DOW JONES - JUST SECURITY - GRIST - SPACEFLIGHT - 24 NOV 2026", 2, MUTED);
 
 // ------------------------------------------------------------------
 // PNG encode: filter 0 per scanline, zlib deflate, CRC32 chunks.

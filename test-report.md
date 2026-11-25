@@ -1,16 +1,16 @@
 # Bench report: news-image-20261124
 
 - command: `cd ~/workspace/makefun/news-image-20261124-entry && node test.mjs`
-- started (UTC): 2026-11-25T00:29:06.727647+00:00
-- duration: 0.73s
+- started (UTC): 2026-11-25T02:22:08.163876+00:00
+- duration: 0.80s
 - exit code: 0
 - verdict: PASS
 
 ## stdout
 
 ```
-run A bytes: 19301 sha256: e7cefaa5c57a06b195d4ae0b5ff2bcd6aca7fadd6a1f1b7055a938adac7dbf3b
-run B bytes: 19301 sha256: e7cefaa5c57a06b195d4ae0b5ff2bcd6aca7fadd6a1f1b7055a938adac7dbf3b
+run A bytes: 19377 sha256: d0db783c8fe76508934783345d9109ad1df63a6769825a13b2def832ca092b58
+run B bytes: 19377 sha256: d0db783c8fe76508934783345d9109ad1df63a6769825a13b2def832ca092b58
 deterministic (identical bytes): true
 PNG signature ok: true
 dimensions: 1024x1024
